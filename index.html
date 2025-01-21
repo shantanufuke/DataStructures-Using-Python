@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub File Viewer</title>
+    <!-- Prism.js Theme -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <!-- Prism.js Core -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <!-- Prism.js Python Language -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f4f4f9;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        label {
+            margin-top: 10px;
+            font-size: 18px;
+            color: #555;
+        }
+        select, button {
+            padding: 10px;
+            font-size: 16px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 300px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        pre {
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            max-width: 90%;
+            margin: 20px auto;
+            color: #f8f8f2;
+        }
+        .error {
+            color: red;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>GitHub File Viewer</h1>
+    <form id="form">
+        <label for="folder">Choose a folder:</label>
+        <select id="folder">
+            <option value="Sorting%20Algorithms">Sorting Algorithms</option>
+        </select>
+        
+        <label for="filename">Choose a file:</label>
+        <select id="filename">
+            <option value="Sorting%20Algorithms/BubbleSort.py">BubbleSort</option>
+            <option value="Sorting%20Algorithms/QuickSort.py">QuickSort</option>
+            <option value="Sorting%20Algorithms/MergeSort.py">MergeSort</option>
+            <option value="Sorting%20Algorithms/InsertionSort.py">InsertionSort.</option>
+            <option value="Sorting%20Algorithms/SelectionSort.py">SelectionSort</option>
+            <option value="Sorting%20Algorithms/CountingSort.py">CountingSort</option>
+        </select>
+        
+        <button type="submit">Fetch Code</button>
+    </form>
+    <div id="output"></div>
+
+    <script>
+        const form = document.getElementById("form");
+        const folderDropdown = document.getElementById("folder");
+        const fileDropdown = document.getElementById("filename");
+        const output = document.getElementById("output");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            const filename = fileDropdown.value;
+            const username = "shantanufuke"; // Replace with your GitHub username
+            const repo = "DataStructures-Using-Python"; // Replace with your repository name
+            const branch = "main"; // Replace with your branch (e.g., main or master)
+            const fileUrl = `https://raw.githubusercontent.com/${username}/${repo}/${branch}/${filename}`;
+            
+            output.innerHTML = "Fetching code...";
+            
+            try {
+                const response = await fetch(fileUrl);
+                if (!response.ok) {
+                    throw new Error("File not found or access denied.");
+                }
+                const code = await response.text();
+                output.innerHTML = `<pre><code class="language-python">${Prism.highlight(code, Prism.languages.python, 'python')}</code></pre>`;
+            } catch (error) {
+                output.innerHTML = `<p class="error">${error.message}</p>`;
+            }
+        });
+
+        folderDropdown.addEventListener("change", () => {
+            const folder = folderDropdown.value;
+            fileDropdown.innerHTML = ""; // Clear previous options
+
+            if (folder === "Sorting%20Algorithms") {
+                const files = [
+                    "BubbleSort.py",
+                    "QuickSort.py",
+                    "MergeSort.py",
+                    "InsertionSort.py",
+                    "SelectionSort.py",
+                    "CountingSort.py"
+                ];
+                files.forEach(file => {
+                    const option = document.createElement("option");
+                    option.value = `${folder}/${file}`;
+                    option.textContent = file;
+                    fileDropdown.appendChild(option);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
